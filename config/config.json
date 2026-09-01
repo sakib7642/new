@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "agents": {
+    "defaults": {
+      "workspace": "/app/workspace",
+      "restrict_to_workspace": true,
+      "model_name": "picolm-local",
+      "max_tokens": 256,
+      "context_window": 2048,
+      "temperature": 0.7,
+      "max_tool_iterations": 10
+    }
+  },
+  "model_list": [
+    {
+      "model_name": "picolm-local",
+      "provider": "openai",
+      "model": "picolm-local",
+      "api_base": "http://127.0.0.1:8090/v1",
+      "api_keys": ["local"]
+    }
+  ],
+  "channel_list": {
+    "telegram": {
+      "enabled": false,
+      "type": "telegram",
+      "allow_from": [],
+      "settings": {
+        "token": "",
+        "base_url": "",
+        "proxy": "",
+        "use_markdown_v2": false,
+        "streaming": { "enabled": true }
+      }
+    }
+  }
+}
