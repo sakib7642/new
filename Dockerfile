@@ -23,7 +23,7 @@ FROM debian:bookworm AS picolm-builder
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates build-essential && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 RUN git clone --depth 1 https://github.com/RightNow-AI/picolm.git picolm
-WORKDIR /src/picolm
+WORKDIR /src/picolm/picolm
 RUN make native
 
 FROM debian:bookworm AS model
@@ -37,7 +37,7 @@ WORKDIR /app
 COPY --from=picoclaw-builder /out/picoclaw /app/picoclaw
 COPY --from=picoclaw-builder /out/picoclaw-launcher /app/picoclaw-launcher
 COPY --from=picoclaw-builder /out/local-llm-proxy /app/local-llm-proxy
-COPY --from=picolm-builder /src/picolm/picolm /app/picolm
+COPY --from=picolm-builder /src/picolm/picolm/picolm /app/picolm
 COPY --from=model /models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf /app/models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
 COPY config/config.json /config/config.json
 COPY entrypoint.sh /app/entrypoint.sh
