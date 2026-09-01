@@ -1,17 +1,21 @@
 # syntax=docker/dockerfile:1.7
 
+ARG PICOCLAW_VERSION=v0.2.9
+
 FROM node:22-bookworm AS frontend
+ARG PICOCLAW_VERSION
 RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
-RUN git clone --depth 1 https://github.com/sipeed/picoclaw.git picoclaw
+RUN git clone --depth 1 --branch ${PICOCLAW_VERSION} https://github.com/sipeed/picoclaw.git picoclaw
 WORKDIR /src/picoclaw
 RUN cd web/frontend && pnpm install --frozen-lockfile && pnpm build:backend
 
 FROM golang:1.25-bookworm AS picoclaw-builder
+ARG PICOCLAW_VERSION
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
-RUN git clone --depth 1 https://github.com/sipeed/picoclaw.git picoclaw
+RUN git clone --depth 1 --branch ${PICOCLAW_VERSION} https://github.com/sipeed/picoclaw.git picoclaw
 COPY --from=frontend /src/picoclaw/web/backend/dist /src/picoclaw/web/backend/dist
 WORKDIR /src/picoclaw
 RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /out/picoclaw ./cmd/picoclaw
